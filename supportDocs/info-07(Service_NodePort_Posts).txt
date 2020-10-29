@@ -1,0 +1,12 @@
+Node Port
+---------
+1) Under "infra/k8s" create a "yaml" file as "posts-srv.yaml"
+    >> This is service config file for service "posts"
+2) goto "k8s" folder and apply the new config file
+    kubectl apply -f posts-srv.yaml 
+        [ response: service/posts-srv created ]    
+
+3) View services: kubectl get services
+NAME         TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE  
+kubernetes   ClusterIP   10.96.0.1      <none>        443/TCP          3d21h
+posts-srv    NodePort    10.104.9.228   <none>        4000:30770/TCP   85s

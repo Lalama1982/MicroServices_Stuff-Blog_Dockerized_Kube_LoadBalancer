@@ -1,0 +1,50 @@
+Deployment
+----------
+1) Build an image for "event-bus"
+    docker build -t lalama1982/event-bus .
+        >>  Successfully built 953ecedad079
+            Successfully tagged lalama1982/event-bus:latest
+
+2) Push image to docker-hub
+    docker push lalama1982/event-bus
+        >>  latest: digest: sha256:9256b9dd0c3ec6008fe66d3950ec6212e7ac23db11727e3435112c0b2811d27f size: 1994
+
+3) Create a deployment
+    Inside "infra/k8s", create "event-bus-depl.yaml".
+    Content almost similar to "posts-depl.yaml"
+    Apply the config file to Kubes.
+        At "infra/k8s": kubectl apply -f event-bus-depl.yaml
+            >> deployment.apps/event-bus-depl created
+    Check by : 
+        kubectl get pods        
+            >>  NAME                              READY   STATUS    RESTARTS   AGE
+                event-bus-depl-6bbf7b4ddf-klt6z   1/1     Running   0          61m
+        
+        kubectl logs event-bus-depl-6bbf7b4ddf-klt6z     
+            >>
+                > event-bus@1.0.0 start /app
+                > nodemon index.js
+
+                [nodemon] 2.0.4
+                [nodemon] to restart at any time, enter `rs`
+                [nodemon] watching path(s): *.*
+                [nodemon] watching extensions: js,mjs,json
+                [nodemon] starting `node index.js`
+                [event bus - index] ::  Listening on 4005
+
+Service
+-------
+1) In the same "event-bus-depl.yaml" file, define the service.
+    Could define a seperate file as well
+    After "seperators", don't define a comment straight away
+
+2)  At "infra/k8s", apply the config file   
+    kubectl apply -f event-bus-depl.yaml
+    >>  deployment.apps/event-bus-depl unchanged
+        service/event-bus-srv created
+
+3) Check: kubectl get services   
+    NAME            TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE 
+    event-bus-srv   ClusterIP   10.98.93.70    <none>        4005/TCP         110s
+    kubernetes      ClusterIP   10.96.0.1      <none>        443/TCP          5d  
+    posts-srv       NodePort    10.104.9.228   <none>        4000:30770/TCP   27h     

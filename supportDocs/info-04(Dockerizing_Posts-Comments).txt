@@ -1,0 +1,24 @@
+1) Inside, "posts" directory create a file without extension as "Dockerfile". (case sensitive)
+2) Create another as ".dockerignore" to ignore files & folders been copied to docker image (i.e. "node_modules")
+3) Go to termial prompt of "posts" & run "docker build ." (docker should be running in the PC)
+    3.1) Once executed successfully, it will show the cotainer id.
+        e.g. Successfully built 2e680b3d1dbb
+    3.2) Go to console & run the container as "docker run 2e680b3d1dbb"
+    3.3) This should start the service (like "npm start")
+
+4) Following the below command, a build could be built with an image id & tag name
+    docker build -t lalama1982/posts .
+    [here "lalama1982" is the docker name] 
+
+    With a version: docker build -t lalama1982/posts:0.0.1 .   
+
+    Once executed at the end it show the image id & tag name
+    e.g. Successfully built f6abc7e3f544
+         Successfully tagged lalama1982/posts:latest
+
+    So the service could be start using following commands.
+    a) docker run 2e680b3d1dbb
+    b) docker run lalama1982/posts:latest      
+
+5) Since other services (i.e. "comments")  use same set of commands (npm start) to up the service, duplicating (with slight changes)
+   docker config files to those folders will suffice

@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+    name: moderation-depl
+spec:
+    replicas: 1    #specifies number of pods
+    selector:
+        matchLabels:
+            app: moderation
+    template:
+        metadata:
+            labels:
+                app: moderation
+        spec:
+            containers:
+                -   name: moderation
+                    image: lalama1982/moderation
+--- 
+apiVersion: v1
+# adding multiple entities
+# Config for service
+kind: Service
+metadata:
+    name:   moderation-srv
+spec: 
+    # If "type:" not defined, by default , a cluster IP service is set
+    selector:
+        app: moderation #for all pods with label "moderation"    
+    ports: 
+        -   name: moderation
+            protocol: TCP
+            port: 4003 # could be different to port the app ("moderation") run
+            targetPort: 4003 # port in which "moderation" app runs

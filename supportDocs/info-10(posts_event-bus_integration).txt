@@ -1,0 +1,108 @@
+1)  Changes to code
+    At "index.js"[posts]: 
+    Instead of this,
+        await axios.post("http://localhost:4005/events", {
+            type: "PostCreated",
+            data: { id, title },
+        });
+  
+    Add 
+        await axios.post("http://event-bus-srv:4005/events", {
+            type: "PostCreated",
+            data: { id, title },
+        });      
+        (a) Emitting to "event-bus" service running in docker under Kube service
+        (b) "event-bus-srv" is the service defined in Kube. (get the list by "kubectl get services")
+
+    At "index.js"[event-bus]: 
+    Instead of this,
+        await axios.post("http://localhost:4000/events", event);
+  
+    Add 
+        await axios.post("http://posts-clusterip-srv:4000/events", event);
+        (a) Emitting to "posts" service running in docker under Kube service
+        (b) "posts-clusterip-srv" is the service defined in Kube. (get the list by "kubectl get services")
+        (c) emitting to "posts" service in Docker via Kube Service
+
+2)  Build the apps at Docker 
+    (a) Build & Push
+    docker build -t lalama1982/event-bus .
+        Successfully built f23233750466
+        Successfully tagged lalama1982/event-bus:latest
+
+    docker push lalama1982/event-bus
+
+    (b) Build & Push
+        docker build -t lalama1982/posts .
+            Successfully built bade145583d4
+            Successfully tagged lalama1982/posts:latest
+
+        docker push lalama1982/posts
+
+3)  Need to restart services (using deployments)
+    (a) Identify the deployments by;
+	    kubectl get deployments
+            NAME             READY   UP-TO-DATE   AVAILABLE   AGE
+            event-bus-depl   1/1     1            1           2d
+            posts-depl       1/1     1            1           3d7h
+
+    (b) Both need to restart
+        kubectl rollout restart deployment posts-depl
+        kubectl rollout restart deployment event-bus-depl
+
+4) Testing
+    (a) Get services & ports
+        kubectl get services
+            NAME                  TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+            event-bus-srv         ClusterIP   10.98.93.70      <none>        4005/TCP         47h
+            kubernetes            ClusterIP   10.96.0.1        <none>        443/TCP          7d
+            posts-clusterip-srv   ClusterIP   10.108.134.217   <none>        4000/TCP         47h
+            posts-srv             NodePort    10.104.9.228     <none>        4000:30770/TCP   3d2h        
+    
+    (b) Make a "POST" call to "Node-Port" "posts" service
+        body    :   {
+                        "title": "First Post"
+                    } 
+            - type : JSON
+
+        header / content-type : application/json        
+
+        request :   [POST] / localhost:30770/posts
+
+        expected response   :   {
+                                    "id": "9a568822",
+                                    "title": "First Post"
+                                }
+
+5) Checking logs
+    (a) Get pods 
+        kubectl get pods
+        NAME                              READY   STATUS    RESTARTS   AGE
+        event-bus-depl-797c8f8bf5-zqvkx   1/1     Running   0          5m11s
+        posts                             1/1     Running   3          4d23h
+        posts-depl-56679744fb-kgpk6       1/1     Running   0          5m24s   
+
+    (b) Check log of "posts" deployment : kubectl logs posts-depl-56679744fb-kgpk6
+            > posts@1.0.0 start /app
+            > nodemon index.js
+
+            [nodemon] 2.0.4
+            [nodemon] to restart at any time, enter `rs`
+            [nodemon] watching path(s): *.*
+            [nodemon] watching extensions: js,mjs,json
+            [nodemon] starting `node index.js`
+            Version: 3.0
+            [posts - index] :: Listening on 4000!
+            [posts-index] :: Received Event:  PostCreated    
+
+    (c) Check log of "posts" deployment : kubectl logs event-bus-depl-797c8f8bf5-zqvkx
+            > event-bus@1.0.0 start /app
+            > nodemon index.js
+
+            [nodemon] 2.0.4
+            [nodemon] to restart at any time, enter `rs`
+            [nodemon] watching path(s): *.*
+            [nodemon] watching extensions: js,mjs,json
+            [nodemon] starting `node index.js`
+            [event bus - index] ::  Listening on 4005
+            [eventbus-index] :: Received Event:  PostCreated    

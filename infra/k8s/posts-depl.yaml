@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+    name: posts-depl
+spec:
+    replicas: 1    #specifies number of pods
+    selector:
+        matchLabels:
+            app: posts
+    template:
+        metadata:
+            labels:
+                app: posts
+        spec:
+            containers:
+                -   name: posts
+                    image: lalama1982/posts
+--- 
+apiVersion: v1
+# adding multiple entities
+# Config for service
+kind: Service
+metadata:
+    name:   posts-clusterip-srv
+spec: 
+    # If "type:" not defined, by default , a cluster IP service is set
+    selector:
+        app: posts #for all pods with label "posts"    
+    ports: 
+        -   name: posts
+            protocol: TCP
+            port: 4000 # could be different to port the app ("posts") run
+            targetPort: 4000 # port in which "posts" app runs

@@ -1,0 +1,16 @@
+Now, "posts" needed to define with a "clusterIP" service.
+1) at "posts-depl.yaml", similar to "event-bus", a new service parameter is added.
+
+2) "posts-srv" is already used in for "Node Port" hence need to define a different name.
+
+3) update the "posts-depl.yaml"
+    kubectl apply -f posts-depl.yaml
+    >>  deployment.apps/posts-depl unchanged
+        service/posts-clusterip-srv created
+
+4) Check >> kubectl get services
+NAME                  TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+event-bus-srv         ClusterIP   10.98.93.70      <none>        4005/TCP         10m
+kubernetes            ClusterIP   10.96.0.1        <none>        443/TCP          5d
+posts-clusterip-srv   ClusterIP   10.108.134.217   <none>        4000/TCP         38s
+posts-srv             NodePort    10.104.9.228     <none>        4000:30770/TCP   27h        

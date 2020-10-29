@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+    name: query-depl
+spec:
+    replicas: 1    #specifies number of pods
+    selector:
+        matchLabels:
+            app: query
+    template:
+        metadata:
+            labels:
+                app: query
+        spec:
+            containers:
+                -   name: query
+                    image: lalama1982/query
+--- 
+apiVersion: v1
+# adding multiple entities
+# Config for service
+kind: Service
+metadata:
+    name:   query-srv
+spec: 
+    # If "type:" not defined, by default , a cluster IP service is set
+    selector:
+        app: query #for all pods with label "query"    
+    ports: 
+        -   name: query
+            protocol: TCP
+            port: 4002 # could be different to port the app ("query") run
+            targetPort: 4002 # port in which "query" app runs

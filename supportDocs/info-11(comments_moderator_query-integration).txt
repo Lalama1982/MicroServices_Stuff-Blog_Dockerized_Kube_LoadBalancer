@@ -1,0 +1,123 @@
+Comments
+--------
+1) Go to "comments" folder & Build the service
+    docker build -t lalama1982/comments .
+        Successfully built 7846d3a93a58
+        Successfully tagged lalama1982/comments:latest    
+
+2) Push
+    docker push lalama1982/comments
+
+3) Create "comments-depl.yaml" under "infra\k8s"  
+
+4) Go to "infra\k8s" folder & apply the config files
+    kubectl apply -f .
+     -- This will apply all the "yaml" files inside the director
+
+Moderation
+----------    
+1) Go to "moderation" folder & Build the service
+    docker build -t lalama1982/moderation .
+        Successfully built f9119c251cb4
+        Successfully tagged lalama1982/moderation:latest 
+
+2) Push
+    docker push lalama1982/moderation
+    
+3) Create "moderation-depl.yaml" under "infra\k8s"
+
+4) Go to "infra\k8s" folder & apply the config files
+    kubectl apply -f .
+     -- This will apply all the "yaml" files inside the director
+
+Query
+-----    
+1) Go to "query" folder & Build the service
+    docker build -t lalama1982/query .
+        Successfully built c0d86322cb0c
+        Successfully tagged lalama1982/query:latest   
+
+2) Push
+    docker push lalama1982/query
+
+3) Create "query-depl.yaml" under "infra\k8s"    
+
+4) Go to "infra\k8s" folder & apply the config files
+    kubectl apply -f .
+     -- This will apply all the "yaml" files inside the director
+
+Check
+-----
+1) kubectl get pods (all should be running status)     
+    -- if not in running status, check;
+        (a) kubectl describe pod posts-depl-56679744fb-kgpk6
+        (b) kubectl logs posts-depl-56679744fb-kgpk6
+
+Updates to Event-Bus
+--------------------
+1) Go to "index.js" of "event-bus" and redirect all the axio calls.
+  await axios.post("http://posts-clusterip-srv:4000/events", event); // emitting to "posts" service in Docker via Kube Service
+  await axios.post("http://comments-srv:4001/events", event); // emitting to "comments" service in Docker via Kube Service
+  await axios.post("http://query-srv:4002/events", event); // emitting to "query-service" in Docker via Kube Service
+  await axios.post("http://moderation-srv:4003/events", event); // emitting to "moderator" in Docker via Kube Service
+
+2) go to "event-bus" folder
+
+3) Go to "event-bus" folder & Build the service
+    docker build -t lalama1982/event-bus .
+        Successfully built 7eca6f92a768
+        Successfully tagged lalama1982/event-bus:latest  
+
+4) Push
+    docker push lalama1982/event-bus
+
+5) Deployment Restart
+    Get Deployments
+        kubectl get deployments
+            NAME              READY   UP-TO-DATE   AVAILABLE   AGE
+            comments-depl     1/1     1            1           17m
+            event-bus-depl    1/1     1            1           3d17h
+            moderation-depl   1/1     1            1           17m
+            posts-depl        1/1     1            1           5d
+            query-depl        1/1     1            1           17m
+    
+    Restart & Rollout
+        kubectl rollout restart deployment event-bus-depl
+
+        Note: Now, "event-bus-depl" & "posts-depl" images were pushed earlier.
+            Hence, any changes to them, requires a restart.
+            Others (i.e. "comments-depl"), updated & images were push, hence no need of restart. 
+
+Testing via Postman
+-------------------
+1)  Make a "POST" call to "Node-Port" "posts" service
+    body    :   {
+                    "title": "First Post"
+                } 
+        - type : JSON
+
+    header / content-type : application/json        
+
+    request :   [POST] / localhost:30770/posts
+
+    expected response   :   {
+                                "id": "9a568822",
+                                "title": "First Post"
+                            }
+2) Checking logs
+    (a) Get pods 
+        kubectl get pods
+            NAME                               READY   STATUS    RESTARTS   AGE
+            comments-depl-5f75db6d7d-rjd2b     1/1     Running   0          28m
+            event-bus-depl-75cd4cbfd8-mq6tm    1/1     Running   0          7m54s
+            moderation-depl-5b98986c64-fp7qc   1/1     Running   0          28m
+            posts                              1/1     Running   4          6d17h
+            posts-depl-56679744fb-kgpk6        1/1     Running   1          41h
+            query-depl-8cb9d746d-cxw64         1/1     Running   0          28m  
+
+    (b) Check log of for each deployment : 
+        kubectl logs comments-depl-5f75db6d7d-rjd2b
+        kubectl logs event-bus-depl-75cd4cbfd8-mq6tm
+        kubectl logs moderation-depl-5b98986c64-fp7qc
+        kubectl logs posts-depl-56679744fb-kgpk6
+        kubectl logs query-depl-8cb9d746d-cxw64

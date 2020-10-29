@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+    name: comments-depl
+spec:
+    replicas: 1    #specifies number of pods
+    selector:
+        matchLabels:
+            app: comments
+    template:
+        metadata:
+            labels:
+                app: comments
+        spec:
+            containers:
+                -   name: comments
+                    image: lalama1982/comments
+--- 
+apiVersion: v1
+# adding multiple entities
+# Config for service
+kind: Service
+metadata:
+    name:   comments-srv
+spec: 
+    # If "type:" not defined, by default , a cluster IP service is set
+    selector:
+        app: comments #for all pods with label "comments"    
+    ports: 
+        -   name: comments
+            protocol: TCP
+            port: 4001 # could be different to port the app ("comments") run
+            targetPort: 4001 # port in which "comments" app runs

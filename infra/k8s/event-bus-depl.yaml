@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+    name: event-bus-depl
+spec:
+    replicas: 1    #specifies number of pods
+    selector:
+        matchLabels:
+            app: event-bus
+    template:
+        metadata:
+            labels:
+                app: event-bus
+        spec:
+            containers:
+                -   name: event-bus
+                    image: lalama1982/event-bus
+--- 
+apiVersion: v1
+# adding multiple entities
+# Config for service
+kind: Service
+metadata:
+    name:   event-bus-srv
+spec: 
+    # If "type:" not defined, by default , a cluster IP service is set
+    selector:
+        app: event-bus #for all pods with label "event-bus"    
+    ports: 
+        -   name: event-bus
+            protocol: TCP
+            port: 4005 # could be different to port the app ("event-bus") run
+            targetPort: 4005 # port in which "event-bus" app runs
+
+

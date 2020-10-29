@@ -1,0 +1,36 @@
+ReactApp project "client"
+-------------------------
+1. Earlier
+===========================================================================
+1.  Create a folder as "client" inside "blog"
+    In the termnial execute : npx create-react-app client
+2. Inside the "blog" folder create another folder as "posts"
+    2.1 Inside it, (in the termnial) run : npm init -y 
+        This will create a "package.json" file
+    2.2 Further install following : npm install express cors axios nodemon
+3. Inside the "blog" folder create another folder as "comments"
+    3.1 Inside it, (in the termnial) run : npm init -y 
+        This will create a "package.json" file
+    3.2 Further install following : npm install express cors axios nodemon    
+===========================================================================
+
+2. Install following;
+    npm install axios
+
+3. If run "npm start", application will run in port 3000 default, referring to the script defined (by default)  in "package.json"
+    3.1 This needs, "posts" & "comments" applications executed.
+    3.2 Hence open individual terminals for each application and run them ("npm start")
+4. Inside, "client/src", delete everything (what ever inside are like boilerplate stuff created when project was initialized)
+    4.1 Create 2 files as "index.js" & "App.js"
+5. Inside "client/public/index.html", link the bootstrap css as shown below
+    <!-- From bootstrap :: START -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <!-- From bootstrap :: END -->  
+
+    This will format the page returned by "client/src/PostCreate.js"  
+
+6. In "PostList.js", "useState({});" accepts an object (not an array "[]"), 
+    - as "GET" route at "posts/index.js" returns posts as an object
+
+7. In "CommentList.js", "useState([]);" accepts an array (not an object "{}"), 
+    - as "GET" route at "comments/index.js" returns posts as an array

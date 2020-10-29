@@ -1,0 +1,13 @@
+1) Go to the folder of the Service & Build the image with a version
+	docker build -t lalama1982/posts:0.0.1 .
+2) Create a folder structure as "infra/k8s" in the root
+    2.1) Inside create "posts.yaml" file, code with "yaml"
+
+3) Now, in the terminal, go inside the "infra/k8s", enter following
+    kubectl apply -f posts.yaml
+    >> Should give a response like "pod/posts created"
+
+4)  Commands to check;
+    kubectl get pods
+     >> NAME    READY   STATUS    RESTARTS   AGE
+        posts   1/1     Running   0          2m3s

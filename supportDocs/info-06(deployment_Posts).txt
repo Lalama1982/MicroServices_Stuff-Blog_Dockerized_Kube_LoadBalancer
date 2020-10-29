@@ -1,0 +1,67 @@
+1. Remove or rename "posts.yaml" file (if exists) inside the service-project-folder
+2. Create a new folder as "posts-depl.yaml"
+3. Inside the "k8s", execute "kubectl apply -f posts-depl.yaml".
+    if no error should show : deployment.apps/posts-depl created
+4. Commands:
+    Get Deployments: kubectl get deployments
+    Get pods: kubectl get pods
+    Delete:
+        kubectl delete deployment <deployment-name>
+        kubectl delete pod <pod-name>         
+        >> Pods(created via deployment) deleted will be recreated by the deployments
+
+    Describe:
+        kubectl describe deployment posts-depl    
+
+5.  Updating a deployment Method# : 1
+    (a) Do a change in the code (i.e. Updated a console-log in index.js)
+    (b) rebuild the image at "posts" (changing the dir to "posts"), with a new version (0.0.2)
+        >> docker build -t lalama1982/posts:0.0.2 .
+    (c) Go to "posts-depl.yaml"  & update the version as "0.0.2"
+                containers:
+                -   name: posts
+                    image: lalama1982/posts:0.0.2
+    (d) Inside the "k8s", execute "kubectl apply -f posts-depl.yaml".
+        >> Response should be: deployment.apps/posts-depl configured
+        >> Checking the pods
+            kubectl get pods
+                NAME                          READY   STATUS    RESTARTS   AGE
+                posts                         1/1     Running   1          40h
+                posts-depl-676677b659-4dhsb   1/1     Running   0          25s
+
+            kubectl logs posts-depl-676677b659-4dhsb
+                >> Should list the log of build
+                    > posts@1.0.0 start /app
+                    > nodemon index.js
+
+                    [nodemon] 2.0.4
+                    [nodemon] to restart at any time, enter `rs`
+                    [nodemon] watching path(s): *.*
+                    [nodemon] watching extensions: js,mjs,json  
+                    [nodemon] starting `node index.js`
+                    Version: 2.0
+                    [posts - index] :: Listening on 4000!                
+
+6.  Updating a deployment Method# : 2
+    (a) At "posts-depl.yaml", either remove the version or add as lates
+        image: lalama1982/posts
+        image: lalama1982/posts:latest
+
+    (b) Inside, "infra/k8s" apply the changes;
+        kubectl apply -f posts-depl.yaml
+
+    (c) Make an update to code (i.e. index.js)
+    (d) Go to the "posts" folder & build the pod
+        docker build -t lalama1982/posts .
+         >> Response: Successfully tagged lalama1982/posts:latest
+
+    (e) Push it to docker hub
+         docker push lalama1982/posts
+
+    (f) Rollout & restart the deployment
+        (a) Inside "posts" folder execute;
+            kubectl rollout restart deployment posts-depl
+                >> deployment.apps/posts-depl restarted
+        (b) Run to see whehter version change is applied: kubectl logs posts-depl-67d5fb5f7-fnhmq
+
+

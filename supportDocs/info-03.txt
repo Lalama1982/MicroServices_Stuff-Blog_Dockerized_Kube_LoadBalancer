@@ -1,0 +1,24 @@
+ReactApp project "event-bus"
+----------------------------
+1. Set up
+    npm init -y
+    npm install express nodemon axios
+2. Create an "index.js" file
+    a) Create an "POST" route listener to forward all received requests to other listening services
+       ["posts", "comments", "query-service"]    
+
+ReactApp project "Query Service"
+--------------------------------   
+1. Set up
+    npm init -y
+    npm install express cors nodemon axios
+
+2.     
+
+ReactApp project "Moderation"
+-----------------------------
+1. Set up
+    npm init -y
+    npm install axios express nodemon
+
+2.     

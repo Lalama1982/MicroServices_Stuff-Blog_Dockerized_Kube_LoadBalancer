@@ -1,0 +1,65 @@
+1.  Create a folder as "client" inside "blog"
+    In the termnial execute : npx create-react-app client
+2. Inside the "blog" folder create another folder as "posts"
+    2.1 Inside it, (in the termnial) run : npm init -y 
+        This will create a "package.json" file
+    2.2 Further install following : npm install express cors axios nodemon
+3. Inside the "blog" folder create another folder as "comments"
+    3.1 Inside it, (in the termnial) run : npm init -y 
+        This will create a "package.json" file
+    3.2 Further install following : npm install express cors axios nodemon    
+
+4. Execution of "Posts"
+-----------------------
+    Installs :: npm install cors
+    4.1 "cd posts" & enter "npm start"
+    4.2 Initial / Prem testing of "get" & "post"
+        a) "post" : inserting values to "posts" array
+            localhost:4000/posts [content-type : application/json]
+            body :  {
+                        "title": "First Post"
+                    }
+            response:   {
+                            "id": "6a123849",
+                            "title": "First Post"
+                        }                    
+        b) "get" : returning values of "posts" array
+            localhost:4000/posts [content-type : application/json]
+            response:   {
+                            "6a123849": {
+                                "id": "6a123849",
+                                "title": "First Post"
+                            }
+                        }                         
+5. Execution of "Comments"
+-----------------------
+    Installs :: npm install cors
+    5.1 "cd posts" & enter "npm start"
+    5.2 Initial / Prem testing of "get" & "post"
+        a) "post" :POST - Insert to "commentsByPostId" array with "id"
+            localhost:4001/posts/123/comments [content-type : application/json]
+            body :  {
+                        "content" : "Comment content example2"
+                    }
+            response:   [
+                            {
+                                "id": "25c26715",
+                                "content": "Comment content example"
+                            },
+                            {
+                                "id": "cd763c70",
+                                "content": "Comment content example2"
+                            }
+                        ]                  
+        b) "get" : returning values of "posts" array
+            localhost:4001/posts/123/comments [content-type : application/json]
+            response:   [
+                            {
+                                "id": "25c26715",
+                                "content": "Comment content example"
+                            },
+                            {
+                                "id": "cd763c70",
+                                "content": "Comment content example2"
+                            }
+                        ]                           
