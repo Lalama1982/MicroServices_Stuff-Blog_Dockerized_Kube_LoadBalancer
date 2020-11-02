@@ -1,0 +1,58 @@
+apiVersion: skaffold/v2alpha3
+kind: Config
+deploy:
+    kubectl:
+        manifests:
+            - ./infra/k8s/* # all config files inside the folder are applied
+build:
+    local:
+        push: false
+    artifacts:
+        -   image: lalama1982/client
+            context: client
+            docker:
+                dockerfile:  Dockerfile
+            sync:
+                manual:
+                    -   src: 'src/**/*.js'  # all js files in "src" folder   
+                        dest: .      
+        -   image: lalama1982/comments
+            context: comments
+            docker:
+                dockerfile:  Dockerfile
+            sync:
+                manual:
+                    -   src: '*.js' # no "src" folder like "client"
+                        dest: .   
+        -   image: lalama1982/event-bus
+            context: event-bus
+            docker:
+                dockerfile:  Dockerfile
+            sync:
+                manual:
+                    -   src: '*.js' # no "src" folder like "client"
+                        dest: .                        
+        -   image: lalama1982/moderation
+            context: moderation
+            docker:
+                dockerfile:  Dockerfile
+            sync:
+                manual:
+                    -   src: '*.js' # no "src" folder like "client"
+                        dest: .                         
+        -   image: lalama1982/posts
+            context: posts
+            docker:
+                dockerfile:  Dockerfile
+            sync:
+                manual:
+                    -   src: '*.js' # no "src" folder like "client"
+                        dest: .                        
+        -   image: lalama1982/query
+            context: query
+            docker:
+                dockerfile:  Dockerfile
+            sync:
+                manual:
+                    -   src: '*.js' # no "src" folder like "client"
+                        dest: .                        

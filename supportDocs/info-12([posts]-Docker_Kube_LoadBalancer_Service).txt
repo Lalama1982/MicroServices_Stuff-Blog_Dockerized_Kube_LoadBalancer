@@ -1,0 +1,52 @@
+1. Apply the deployment config file using the following
+    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v0.40.1/deploy/static/provider/cloud/deploy.yaml
+    (a) Resources
+        -   https://github.com/kubernetes/ingress-nginx
+        -   https://kubernetes.github.io/ingress-nginx/deploy/
+        
+    Note: Seems course instructions are out-dated. Simply follow the instructions given.
+
+2. Under "infra\k8s", create "ingress-srv.yaml"
+    - Apply the file : kubectl apply -f ingress-srv.yaml
+
+3. In the "ingress-srv.yaml" file, host is set as "host: posts.com"
+    (a) When called, "posts.com", via a browser or as a call, it should not be directed to web but to the kube cluster
+        - Open the "C:\Windows\System32\drivers\etc\hosts" file.
+        - After "# End of section" tag, add "127.0.0.1 posts.com"
+        - This will essentially redirect the route to local host
+
+    (b) Inside the "ingress-srv.yaml", "/posts" is mapped to posts service
+        -   path: /posts
+            backend:    
+                serviceName: posts-clusterip-srv
+                servicePort: 4000     
+
+4. Testing
+    (a) Creating a posts
+        Call : [POST] - http://posts.com/posts
+        Body :  [raw / json]
+                {
+                    "title": "Second Post"
+                }
+        Header : Content-Type / application/json
+
+        Response :  {
+                        "id": "bf389ef3",
+                        "title": "Second Post"
+                    }
+
+    (b) Retrieving posts
+        Call : [GET] - http://posts.com/posts
+        
+        Header : Content-Type / application/json
+
+        Response :  {
+                        "849c950b": {
+                            "id": "849c950b",
+                            "title": "First Post"
+                        },
+                        "bf389ef3": {
+                            "id": "bf389ef3",
+                            "title": "Second Post"
+                        }
+                    }

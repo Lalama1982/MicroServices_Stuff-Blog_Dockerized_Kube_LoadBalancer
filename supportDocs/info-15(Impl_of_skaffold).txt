@@ -1,0 +1,39 @@
+(1) Not used in "PROD" envs
+
+(2) Go to "skaffold.dev"
+
+(3) In "Windows" you need "Chocolatey" installed
+    At "cmd": @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command " [System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+    At "powershell" :
+        [Run "Get-ExecutionPolicy". If it returns "Restricted", 
+            then run "Set-ExecutionPolicy AllSigned" or "Set-ExecutionPolicy Bypass -Scope Process."]
+        Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+
+    Run "choco" & should return following;
+        Chocolatey v0.10.15
+        Please run 'choco -?' or 'choco <command> -?' for help menu.        
+
+(4) Once the "Chocolatey" is successfully installed, install "skaffold" as following;
+        - in cmd with Admin Privs
+    choco install -y skaffold
+
+    Run "skaffold version" & should return
+        v1.16.0
+
+(5) At root folder create "skaffold.yaml"
+
+(6) At root folder terminal:
+    enter "skaffold dev"
+
+    Notes:
+        Needed to run "skaffold dev" twice, to get the "posts.com" up
+        On 2nd run, it will run as a server.
+        Changes to a file will restart like "nodemon".
+
+    Important:
+        Each pod should have "nodemon", hence any change to pod it self will restart the pod.
+        - "skaffold" will not do that.        
+
+    Hit "ctrl+c" at terminal to stop "skaffold"   
+    
+         

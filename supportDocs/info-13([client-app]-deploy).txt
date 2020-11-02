@@ -1,0 +1,19 @@
+1) At "client/DockerFile", "ENV CI=true" is added
+
+2) All files in "src" folder of "client", change calls to
+    - "http://localhost:4001/posts" to "http://posts.com/posts"
+    [Note: in the course, even calls to 4001(comments), 4003(query) are updated to "posts.com". ??]
+
+3)  Build & Push an image to docker of "client" (inside the "client" folder)  
+    docker build -t lalama1982/client .
+        Successfully built c229d2311506
+        Successfully tagged lalama1982/client:latest
+
+    docker push lalama1982/client
+
+4)  Create the config file "client-depl.yaml" to create a deployment & a cluster-service
+
+5)  Apply the "client-depl.yaml" to Kube-cluster. (At "infra/k8s")
+    kubectl apply -f client-depl.yaml
+        deployment.apps/client-depl created
+        service/client-srv created

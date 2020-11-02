@@ -1,0 +1,54 @@
+1) Ingress Controller cannot differentiate based on action (i.e. GET, POST)
+
+2) Hence unique routing names should be given on calls
+
+    a) "POST" call for creating a post
+        - At "PostCreate.js" of "client" : 
+            await axios.post("http://posts.com/posts",  >> await axios.post("http://posts.com/posts/create", {
+
+        - At "index.js" of "posts"
+            app.post("/posts", async (req, res) => { >> app.post("/posts/create", async (req, res) => {      
+
+3) Go to "client" folder & build + push to docker (at "client" folder) and rollout+restart it
+    docker build -t lalama1982/client .
+        Successfully built 54bc870a8766
+        Successfully tagged lalama1982/client:latest
+
+    docker push lalama1982/client  
+
+    kubectl rollout restart deployment client-depl (Check "kubectl get deployments")
+
+4) Go to "posts" folder & build + push to docker (at "posts" folder) and rollout+restart it
+    docker build -t lalama1982/posts .
+        Successfully built 38255f54d34c
+        Successfully tagged lalama1982/posts:latest
+
+    docker push lalama1982/posts     
+
+    kubectl rollout restart deployment posts-depl (Check "kubectl get deployments")
+
+5) Update the "ingress-srv.yaml"
+                paths:
+                    -   path: /posts/create #POST : create a post
+                        backend:    
+                            serviceName: posts-clusterip-srv
+                            servicePort: 4000          
+                    -   path: /posts #GET : return all posts
+                        backend:    
+                            serviceName: query-srv
+                            servicePort: 4002
+                    -   path: /posts/?(.*)/comments #POST : create a comment
+                        backend:    
+                            serviceName: comments-srv
+                            servicePort: 4001                           
+                    -   path: /?(.*)
+                        backend:    
+                            serviceName: client-srv #Go to React App (page)
+                            servicePort: 3000 
+
+    (a) apply the file (at "infra/k8s")                                   
+        kubectl apply -f ingress-srv.yaml
+            ingress.networking.k8s.io/ingress-srv configured
+
+6) Testing
+    (a) Check if all pods are running by (kubectl get pods)
